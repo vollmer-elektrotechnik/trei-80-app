@@ -4,8 +4,10 @@ export type Category =
   | 'Schutzmaßnahmen & Netzformen'
   | 'Leitungsberechnung & Verlegearten'
   | 'DIN VDE 0100-600'
+  | 'Sicherheitsregeln & Arbeitsschutz'  // <-- Neu aus DB
+  | 'DGUV Vorschrift 3'                  // <-- Neu aus DB
   | 'Berechnungen'
-  | (string & {}); // Erlaubt jeden neuen String und verhindert zukünftige Build-Fehler
+  | (string & {});
 
 export interface Question {
   id: string;

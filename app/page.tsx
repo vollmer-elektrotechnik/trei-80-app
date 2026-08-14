@@ -288,29 +288,30 @@ export default function Home() {
 
           </div>
         ) : (
-          /* QUIZ-MODUS */
-          <div className="max-w-xl mx-auto h-[calc(100dvh-5rem)] flex flex-col justify-between pb-2 space-y-2">
-            {/* Top Header */}
-            <div className="flex items-center justify-between shrink-0">
-              <button 
-                onClick={() => setActiveCategory(null)}
-                className="px-3 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
-              >
-                ← Beenden
-              </button>
-              <div className="text-xs font-extrabold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2.5 py-0.5 rounded-md">
-                Frage {currentIndex + 1} / {currentQuestions.length}
-              </div>
-            </div>
+		/* QUIZ-MODUS */
+		<div className="max-w-xl mx-auto h-[calc(100dvh-5rem)] flex flex-col justify-between pb-2 space-y-2">
+		  
+		  {/* Sticky Sub-Header (Bleibt direkt unter der Haupt-Navigation kleben) */}
+		  <div className="sticky top-16 z-40 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md py-2.5 flex items-center justify-between shrink-0 -mx-4 px-4 sm:mx-0 sm:px-0">
+			<button 
+			  onClick={() => setActiveCategory(null)}
+			  className="px-3 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+			>
+			  ← Beenden
+			</button>
+			<div className="text-xs font-extrabold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-300/40 dark:border-slate-700/50">
+			  Frage {currentIndex + 1} / {currentQuestions.length}
+			</div>
+		  </div>
 
-            {/* Karte nimmt genau den restlichen Platz ein */}
-            <div className="flex-1 min-h-0">
-              <QuizCard
-                question={currentQuestions[currentIndex]}
-                onNext={handleNextQuestion}
-              />
-            </div>
-          </div>
+		  {/* Karte nimmt den restlichen Platz ein */}
+		  <div className="flex-1 min-h-0">
+			<QuizCard
+			  question={currentQuestions[currentIndex]}
+			  onNext={handleNextQuestion}
+			/>
+		  </div>
+		</div>
         )}
 
       </main>
