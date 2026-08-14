@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import QuizCard from '@/components/QuizCard';
 import CategoryCard from '@/components/CategoryCard';
 import { QUESTIONS_DATA } from '@/data/questions';
@@ -77,7 +78,11 @@ export default function Home() {
       {/* Top Mobile Bar / Header */}
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link 
+            href="/" 
+            onClick={() => setActiveCategory(null)}
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+          >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 flex items-center justify-center text-white font-extrabold shadow-md shadow-amber-500/20 text-lg">
               ⚡
             </div>
@@ -85,7 +90,7 @@ export default function Home() {
               <h1 className="font-extrabold text-base tracking-tight leading-tight">TREI 80 Trainer</h1>
               <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Fahrschul-Modus</p>
             </div>
-          </div>
+          </Link>
 
           {/* Mini Ring/Fortschritt oben rechts */}
           <div className="flex items-center gap-3 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">

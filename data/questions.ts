@@ -1,46 +1,54 @@
-import { Question } from '@/types/quiz';
+export interface Question {
+  id: number;
+  category: "DGUV" | "NAV_Niederspannung" | "Messungen_VDE" | "Netzformen" | "Anmeldung_TAB";
+  question: string;
+  options: string[];
+  correctAnswer: number; // Index der richtigen Option (0-3)
+  explanation: string;   // Erklärung für den Lerneffekt
+  normRef?: string;      // Normenreferenz (z.B. "DIN VDE 0100-600")
+}
 
-export const QUESTIONS_DATA: Question[] = [
+export const TREI_QUESTIONS: Question[] = [
   {
-    id: 'trei-4100-01',
-    category: 'VDE-AR-N 4100',
-    title: 'Wie hoch darf der maximale Spannungsfall von der Hauptleitungsklemme bis zum Zählerplatz sein?',
+    id: 1,
+    category: "NAV_Niederspannung",
+    question: "Wer darf Arbeiten an elektrischen Anlagen nach § 13 NAV (Niederspannungsanschlussverordnung) durchführen?",
     options: [
-      '0,5 %',
-      '1,0 %',
-      '2,0 %',
-      '3,0 %'
-    ],
-    correctAnswer: 0,
-    explanation: 'Nach VDE-AR-N 4100 (Abschnitt 4.4) darf der maximale Spannungsfall im Hauptstromversorgungssystem zwischen der Hauptleitungsklemme und dem Zählerplatz 0,5 % nicht überschreiten.',
-    normReference: 'VDE-AR-N 4100:2019-04, Abs. 4.4'
-  },
-  {
-    id: 'trei-4100-02',
-    category: 'VDE-AR-N 4100',
-    title: 'Welcher Überspannungsschutz (SPD) muss im Hauptstromversorgungssystem vor dem Zählerplatz installiert werden?',
-    options: [
-      'Typ 3 (Feinschutz)',
-      'Typ 2 (Mittelschutz)',
-      'Typ 1 / Kombi-Ableiter (Grob- / Kombischutz)',
-      'Kein SPD im Ungezählten Bereich zulässig'
-    ],
-    correctAnswer: 2,
-    explanation: 'Im Hauptstromversorgungssystem (vor dem Zähler) ist nach VDE-AR-N 4100 zwingend ein leckstromfreier Kombi-Ableiter (Typ 1 + Typ 2) auf Sammelschienensystemen vorzusehen.',
-    normReference: 'VDE-AR-N 4100:2019-04, Abs. 6.1'
-  },
-  {
-    id: 'trei-tab-01',
-    category: 'TAB',
-    title: 'Ab welcher Dauerstrombelastung / Nennleistung muss ein Zählerplatz für eine Wandlermessung vorgesehen werden?',
-    options: [
-      'Ab > 32 A (ca. 22 kW)',
-      'Ab > 63 A (ca. 44 kVA)',
-      'Ab > 80 A (ca. 55 kVA)',
-      'Ab > 100 A (ca. 69 kVA)'
+      "Jeder ausgebildete Elektroniker ohne Einschränkung",
+      "Nur in das Installateurverzeichnis eines Netzbetreibers eingetragene Installateurbetriebe",
+      "Ausschließlich Meister des Elektrotechniker-Handwerks",
+      "Jede Elektrofachkraft (EFK) mit schriftlicher Beauftragung"
     ],
     correctAnswer: 1,
-    explanation: 'Zählerplätze mit Direktmessung sind in der Regel bis 63 A ausgelegt. Bei Dauerbetrieb oder Betriebsströmen > 63 A ist eine Wandlermessung erforderlich.',
-    normReference: 'VDE-AR-N 4100 / TAB, Abs. 7.1'
+    explanation: "Gegenstand des § 13 NAV ist, dass Arbeiten an der elektrischen Anlage (außer Instandhaltung hinter der Messeinrichtung) nur durch den Netzbetreiber oder ein in dessen Installateurverzeichnis eingetragenes Installationsunternehmen ausgeführt werden dürfen.",
+    normRef: "NAV § 13 Abs. 2"
+  },
+  {
+    id: 2,
+    category: "Messungen_VDE",
+    question: "Welcher Grenzwert gilt für den Isolationswiderstand einer Neuanlage mit einer Nennspannung bis 500 V nach DIN VDE 0100-600?",
+    options: [
+      "Mindestens 0,5 MΩ",
+      "Mindestens 1,0 MΩ",
+      "Mindestens 2,0 MΩ",
+      "Mindestens 10,0 MΩ"
+    ],
+    correctAnswer: 1,
+    explanation: "Für Messungen bei einer Erprobungsspannung von 500 V DC muss der Isolationswiderstand nach aktueller DIN VDE 0100-600 mindestens 1,0 MΩ betragen (früher 0,5 MΩ).",
+    normRef: "DIN VDE 0100-600 Tabelle 6.1"
+  },
+  {
+    id: 3,
+    category: "DGUV",
+    question: "Nach welchen 5 Sicherheitsregeln wird vor Beginn von Arbeiten an elektrischen Anlagen im freigeschalteten Zustand vorgegangen?",
+    options: [
+      "Freischalten, Gegen Wiedereinschalten sichern, Spannungsfreiheit feststellen, Erdung anbringen, Absperren",
+      "Freischalten, Absperren, Messen, Erdung anbringen, Reinigen",
+      "Freischalten, Gegen Wiedereinschalten sichern, Spannungsfreiheit feststellen, Erden und Kurzschließen, Benachbarte unter Spannung stehende Teile abdecken oder abschranken",
+      "Sicherung herausdrehen, Messen, Abschranken, Erden, Arbeiten"
+    ],
+    correctAnswer: 2,
+    explanation: "Die 5 Sicherheitsregeln nach DIN VDE 0105-100 lauten in exakter Reihenfolge: 1. Freischalten, 2. Gegen Wiedereinschalten sichern, 3. Spannungsfreiheit feststellen (allepolig), 4. Erden und Kurzschließen, 5. Benachbarte unter Spannung stehende Teile abdecken oder abschranken.",
+    normRef: "DIN VDE 0105-100 / DGUV Vorschrift 3"
   }
 ];
