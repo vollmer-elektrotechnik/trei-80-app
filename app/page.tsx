@@ -9,34 +9,46 @@ import { supabase } from '@/utils/supabaseClient';
 
 const CATEGORIES_CONFIG: { id: Category; title: string; desc: string; icon: string }[] = [
   {
-    id: 'VDE-AR-N 4100',
-    title: 'VDE-AR-N 4100',
-    desc: 'Anwendungsregel Zählerplätze, Vorzählersicherung & SPD-Kombiableiter',
+    id: 'VDE-AR-N 4100 & TAB',
+    title: 'VDE-AR-N 4100 & TAB',
+    desc: 'Zählerplätze, APZ-Raum, Überspannungsschutz (SPD) & VNB-Vorgaben',
     icon: '⚡',
   },
   {
-    id: 'TAB',
-    title: 'TAB & Netzanschluss',
-    desc: 'Technische Anschlussbedingungen der Netzbetreiber & Leistungsgrenzen',
-    icon: '📋',
-  },
-  {
-    id: 'NAV',
-    title: 'NAV Verordnung',
-    desc: 'Niederspannungsanschlussverordnung, § 13 Installateurverzeichnis',
+    id: 'NAV & Recht',
+    title: 'NAV & Recht (§ 13)',
+    desc: 'Niederspannungsanschlussverordnung, Installateurverzeichnis & Haftung',
     icon: '⚖️',
   },
   {
     id: 'DIN VDE 0100-600',
-    title: 'Prüfen nach VDE 0100-600',
-    desc: 'Erstprüfung, Messverfahren (R_ISO, Z_S, RCD) & Grenzwertbeurteilung',
+    title: 'DIN VDE 0100-600',
+    desc: 'Erstprüfungen, Isolationsmessung, Schleifenimpedanz & RCD-Prüfung',
     icon: '🔌',
   },
   {
-    id: 'Berechnungen',
-    title: 'Elektrotechnische Berechnungen',
-    desc: 'Spannungsfall, Schleifenimpedanz, Kurzschlussstrom & Leitungsbemessung',
+    id: 'Schutzmaßnahmen & Netzformen',
+    title: 'Schutzmaßnahmen & Netzformen',
+    desc: 'TN-, TT- & IT-Systeme, RCD-Typen (A/B/F), SELV/PELV & Schutzklassen',
+    icon: '🛡️',
+  },
+  {
+    id: 'Leitungsberechnung & Verlegearten',
+    title: 'Leitungsberechnung',
+    desc: 'Spannungsfall, Kabelquerschnitte, Verlegearten & LS-Charakteristiken',
     icon: '📐',
+  },
+  {
+    id: 'DGUV Vorschrift 3',
+    title: 'DGUV Vorschrift 3',
+    desc: 'Wiederholungsprüfung ortsveränderlicher Geräte (VDE 0701/0702) & Fristen',
+    icon: '📋',
+  },
+  {
+    id: 'Sicherheitsregeln & Arbeitsschutz',
+    title: 'Sicherheit & 5 Regeln',
+    desc: 'Die 5 Sicherheitsregeln, PSA & Arbeiten unter Spannung',
+    icon: '🎛️',
   },
 ];
 
