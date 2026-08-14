@@ -1,0 +1,21 @@
+{
+  "name": "TREI 80 Schein Trainer",
+  "short_name": "TREI Trainer",
+  "description": "Prüfungsvorbereitung für VDE-AR-N 4100 & TAB",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
