@@ -3,11 +3,11 @@ export type Category = 'VDE-AR-N 4100' | 'TAB' | 'NAV' | 'DIN VDE 0100-600' | 'B
 export interface Question {
   id: string;
   category: Category;
-  title: string;          // Die konkrete Fragestellung
-  options: string[];       // 4 Antwortmöglichkeiten
-  correctAnswer: number;  // Index der richtigen Antwort (0-3)
-  explanation: string;   // Detaillierte Erklärung mit Normenbezug
-  normReference?: string;// z.B. "VDE-AR-N 4100 Abschnitt 4.4"
+  title: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+  normReference?: string;
 }
 
 export interface UserStats {

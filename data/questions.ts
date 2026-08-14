@@ -1,46 +1,74 @@
-import { Category, Question } from '@/types/quiz';
+import { Question } from '@/types/quiz';
 
 export const QUESTIONS_DATA: Question[] = [
   {
-    id: 1,
-    category: "TAB",
-    question: "Wer darf Arbeiten an elektrischen Anlagen nach § 13 NAV (Niederspannungsanschlussverordnung) durchführen?",
+    id: 'q1',
+    category: 'NAV',
+    title: 'Wer darf Arbeiten an elektrischen Anlagen nach § 13 NAV (Niederspannungsanschlussverordnung) durchführen?',
     options: [
-      "Jeder ausgebildete Elektroniker ohne Einschränkung",
-      "Nur in das Installateurverzeichnis eines Netzbetreibers eingetragene Installateurbetriebe",
-      "Ausschließlich Meister des Elektrotechniker-Handwerks",
-      "Jede Elektrofachkraft (EFK) mit schriftlicher Beauftragung"
+      'Jeder ausgebildete Elektroniker ohne Einschränkung',
+      'Nur in das Installateurverzeichnis eines Netzbetreibers eingetragene Installateurbetriebe',
+      'Ausschließlich Meister des Elektrotechniker-Handwerks',
+      'Jede Elektrofachkraft (EFK) mit schriftlicher Beauftragung'
     ],
     correctAnswer: 1,
-    explanation: "Gegenstand des § 13 NAV ist, dass Arbeiten an der elektrischen Anlage (außer Instandhaltung hinter der Messeinrichtung) nur durch den Netzbetreiber oder ein in dessen Installateurverzeichnis eingetragenes Installationsunternehmen ausgeführt werden dürfen.",
-    normRef: "NAV § 13 Abs. 2"
+    explanation: 'Nach § 13 NAV dürfen Arbeiten an der elektrischen Anlage (außer Instandhaltung hinter der Messeinrichtung) nur durch den Netzbetreiber oder ein in dessen Installateurverzeichnis eingetragenes Installationsunternehmen ausgeführt werden.',
+    normReference: 'NAV § 13 Abs. 2'
   },
   {
-    id: 2,
-    category: "DIN VDE 0100-600",
-    question: "Welcher Grenzwert gilt für den Isolationswiderstand einer Neuanlage mit einer Nennspannung bis 500 V nach DIN VDE 0100-600?",
+    id: 'q2',
+    category: 'DIN VDE 0100-600',
+    title: 'Welcher Grenzwert gilt für den Isolationswiderstand einer Neuanlage mit einer Nennspannung bis 500 V nach DIN VDE 0100-600?',
     options: [
-      "Mindestens 0,5 MΩ",
-      "Mindestens 1,0 MΩ",
-      "Mindestens 2,0 MΩ",
-      "Mindestens 10,0 MΩ"
+      'Mindestens 0,5 MΩ',
+      'Mindestens 1,0 MΩ',
+      'Mindestens 2,0 MΩ',
+      'Mindestens 10,0 MΩ'
     ],
     correctAnswer: 1,
-    explanation: "Für Messungen bei einer Erprobungsspannung von 500 V DC muss der Isolationswiderstand nach aktueller DIN VDE 0100-600 mindestens 1,0 MΩ betragen (früher 0,5 MΩ).",
-    normRef: "DIN VDE 0100-600 Tabelle 6.1"
+    explanation: 'Für Messungen mit einer Prüfspannung von 500 V DC muss der Isolationswiderstand nach DIN VDE 0100-600 mindestens 1,0 MΩ betragen.',
+    normReference: 'DIN VDE 0100-600 Tabelle 6.1'
   },
   {
-    id: 3,
-    category: "VDE-AR-N 4100",
-    question: "Nach welchen 5 Sicherheitsregeln wird vor Beginn von Arbeiten an elektrischen Anlagen im freigeschalteten Zustand vorgegangen?",
+    id: 'q3',
+    category: 'VDE-AR-N 4100',
+    title: 'Welche maximale Dauerstrombelastung gilt für einen Zählerplatz mit Standard-Verdrahtung (10 mm²) im Dauerbetrieb (z.B. Ladeeinrichtung/Wärmepumpe)?',
     options: [
-      "Freischalten, Gegen Wiedereinschalten sichern, Spannungsfreiheit feststellen, Erdung anbringen, Absperren",
-      "Freischalten, Absperren, Messen, Erdung anbringen, Reinigen",
-      "Freischalten, Gegen Wiedereinschalten sichern, Spannungsfreiheit feststellen, Erden und Kurzschließen, Benachbarte unter Spannung stehende Teile abdecken oder abschranken",
-      "Sicherung herausdrehen, Messen, Abschranken, Erden, Arbeiten"
+      '32 A',
+      '44 A',
+      '63 A',
+      '50 A'
     ],
-    correctAnswer: 2,
-    explanation: "Die 5 Sicherheitsregeln nach DIN VDE 0105-100 lauten in exakter Reihenfolge: 1. Freischalten, 2. Gegen Wiedereinschalten sichern, 3. Spannungsfreiheit feststellen (allepolig), 4. Erden und Kurzschließen, 5. Benachbarte unter Spannung stehende Teile abdecken oder abschranken.",
-    normRef: "DIN VDE 0105-100 / DGUV Vorschrift 3"
+    correctAnswer: 1,
+    explanation: 'Im Dauerbetrieb (z. B. PV-Einspeisung, Ladeeinrichtung) beträgt die maximale Bemessungsstromstärke bei 10 mm² Zählerverdrahtung 44 A (Belastungsanforderung Dauerbetrieb nach VDE-AR-N 4100).',
+    normReference: 'VDE-AR-N 4100 Abschnitt 4.4'
+  },
+  {
+    id: 'q4',
+    category: 'TAB',
+    title: 'Ab welcher Leistung muss eine Ladeeinrichtung für Elektrofahrzeuge beim Netzbetreiber angemeldet bzw. von ihm genehmigt werden?',
+    options: [
+      'Anmeldung ab > 3,7 kVA, Genehmigung ab > 12 kVA',
+      'Anmeldung ab > 4,6 kVA, Genehmigung ab > 11 kVA',
+      'Anmeldung ab > 3,7 kVA, Genehmigung ab > 11 kVA',
+      'Anmeldung ab > 11 kVA, Genehmigung ab > 22 kVA'
+    ],
+    correctAnswer: 0,
+    explanation: 'Ladeeinrichtungen sind ab einer Leistung > 3,7 kVA beim Netzbetreiber anzumelden. Übersteigt die Gesamtleistung 12 kVA, ist zusätzlich die vorherige Zustimmung/Genehmigung erforderlich.',
+    normReference: 'VDE-AR-N 4100 / TAB'
+  },
+  {
+    id: 'q5',
+    category: 'Berechnungen',
+    title: 'Wie berechnet sich der maximale Spannungsfall ΔU in einem Drehstromsystem bei symmetrischer Belastung?',
+    options: [
+      'ΔU = (2 · l · P) / (γ · A · U)',
+      'ΔU = (√3 · l · I · cos φ) / (γ · A)',
+      'ΔU = (l · I) / (γ · A)',
+      'ΔU = (√2 · l · I) / (γ · A)'
+    ],
+    correctAnswer: 1,
+    explanation: 'Der Spannungsfall für Drehstrom berechnet sich mit dem Faktor √3: ΔU = (√3 · l · I · cos φ) / (γ · A).',
+    normReference: 'DIN VDE 0100-520 Beiblatt 2'
   }
 ];

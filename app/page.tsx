@@ -4,9 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import QuizCard from '@/components/QuizCard';
 import CategoryCard from '@/components/CategoryCard';
-import { QUESTIONS_DATA } from '@/data/questions';
 import { Category, Question } from '@/types/quiz';
-import { getProgress, saveAnswer, resetProgress, ProgressData } from '@/utils/storage';
+import { supabase } from '@/utils/supabaseClient';
 
 const CATEGORIES_CONFIG: { id: Category; title: string; desc: string; icon: string }[] = [
   {
@@ -22,27 +21,86 @@ const CATEGORIES_CONFIG: { id: Category; title: string; desc: string; icon: stri
     icon: '📋',
   },
   {
+    id: 'NAV',
+    title: 'NAV Verordnung',
+    desc: 'Niederspannungsanschlussverordnung, § 13 Installateurverzeichnis',
+    icon: '⚖️',
+  },
+  {
     id: 'DIN VDE 0100-600',
     title: 'Prüfen nach VDE 0100-600',
     desc: 'Erstprüfung, Messverfahren (R_ISO, Z_S, RCD) & Grenzwertbeurteilung',
     icon: '🔌',
   },
+  {
+    id: 'Berechnungen',
+    title: 'Elektrotechnische Berechnungen',
+    desc: 'Spannungsfall, Schleifenimpedanz, Kurzschlussstrom & Leitungsbemessung',
+    icon: '📐',
+  },
 ];
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<Category | 'ALL' | null>(null);
-  const [progress, setProgress] = useState<ProgressData>({ answered: {}, lastActive: '' });
+  
+  // Zustände für Supabase-Daten
+  const [questionsData, setQuestionsData] = useState<Question[]>([]);
+  const [userProgressMap, setUserProgressMap] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // SCHRITT 4: Daten beim Laden aus Supabase abrufen
   useEffect(() => {
-    setProgress(getProgress());
+    async function fetchDatabaseData() {
+      setLoading(true);
+
+      // 1. Alle aktiven Fragen aus Supabase holen
+      const { data: dbQuestions, error: qError } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+
+      if (qError) {
+        console.error('Fehler beim Laden der Fragen:', qError);
+      } else if (dbQuestions) {
+        setQuestionsData(dbQuestions as Question[]);
+      }
+
+      // 2. Angemeldeten Nutzer prüfen
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        // 3. Fortschritt für diesen Nutzer laden
+        const { data: dbProgress, error: pError } = await supabase
+          .from('user_progress')
+          .select('question_id, is_correct')
+          .eq('user_id', user.id);
+
+        if (pError) {
+          console.error('Fehler beim Laden des Fortschritts:', pError);
+        } else if (dbProgress) {
+          // Map erstellen: { 'q1': true, 'q2': false }
+          const progressMap: Record<string, boolean> = {};
+          dbProgress.forEach(p => {
+            progressMap[p.question_id] = p.is_correct;
+          });
+          setUserProgressMap(progressMap);
+        }
+      }
+
+      setLoading(false);
+    }
+
+    fetchDatabaseData();
   }, []);
 
   const handleSelectCategory = (cat: Category | 'ALL') => {
     const filtered = cat === 'ALL' 
-      ? QUESTIONS_DATA 
-      : QUESTIONS_DATA.filter(q => q.category === cat);
+      ? questionsData 
+      : questionsData.filter(q => q.category === cat);
     
     if (filtered.length === 0) {
       alert('Für dieses Themenfeld sind aktuell noch keine Fragen eingetragen.');
@@ -54,10 +112,29 @@ export default function Home() {
     setActiveCategory(cat);
   };
 
-  const handleNextQuestion = (isCorrect: boolean) => {
+  // Nächste Frage & Fortschritt in Supabase speichern (Schritt 5 Vorschau)
+  const handleNextQuestion = async (isCorrect: boolean) => {
     const currentQ = currentQuestions[currentIndex];
-    const updatedProgress = saveAnswer(currentQ.id, isCorrect);
-    setProgress(updatedProgress);
+
+    // Lokalen State sofort aktualisieren (für schnelle UI)
+    const updatedMap = { ...userProgressMap, [currentQ.id]: isCorrect };
+    setUserProgressMap(updatedMap);
+
+    // In Supabase speichern
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from('user_progress')
+        .upsert(
+          {
+            user_id: user.id,
+            question_id: currentQ.id,
+            is_correct: isCorrect,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,question_id' }
+        );
+    }
 
     if (currentIndex < currentQuestions.length - 1) {
       setCurrentIndex(prev => prev + 1);
@@ -67,10 +144,18 @@ export default function Home() {
     }
   };
 
-  const totalQuestionsCount = QUESTIONS_DATA.length;
-  const totalCorrect = Object.values(progress.answered).filter(Boolean).length;
-  const totalAnswered = Object.keys(progress.answered).length;
+  const totalQuestionsCount = questionsData.length;
+  const totalCorrect = Object.values(userProgressMap).filter(Boolean).length;
+  const totalAnswered = Object.keys(userProgressMap).length;
   const totalPercent = totalQuestionsCount > 0 ? Math.round((totalCorrect / totalQuestionsCount) * 100) : 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-500 font-bold">
+        ⚡ Lade Fragen aus der Datenbank...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-16 font-sans">
@@ -92,7 +177,7 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* Mini Ring/Fortschritt oben rechts */}
+          {/* Mini-Fortschritt oben rechts */}
           <div className="flex items-center gap-3 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
             <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{totalCorrect}/{totalQuestionsCount} Richtig</span>
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -106,22 +191,21 @@ export default function Home() {
         {!activeCategory ? (
           <div className="space-y-8">
             
-            {/* HERO CARD: Statistiken wie in iTheorie */}
+            {/* HERO CARD */}
             <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden border border-slate-800">
               <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
               
               <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
                   <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-semibold mb-3 border border-white/10">
-                    Prüfungssimulation
+                    Prüfungssimulation TREI 80
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">VDE & TAB Trainer</h2>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">VDE, TAB & NAV Trainer</h2>
                   <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-sm">
-                    Sammle grüne Statusbalken in allen Modulen, um prüfungsbereit zu sein.
+                    Lerne alle relevanten Normen & Vorschriften für die Eintragung ins Installateurverzeichnis.
                   </p>
                 </div>
 
-                {/* Große Prozent-Anzeige */}
                 <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 w-full sm:w-auto justify-center">
                   <div className="text-center">
                     <div className="text-3xl font-black text-amber-400">{totalPercent}%</div>
@@ -130,11 +214,10 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Action Button: Gemischte Prüfung */}
               <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => handleSelectCategory('ALL')}
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 active:scale-98 transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>🎲</span> Gemischte Prüfung starten
                 </button>
@@ -150,9 +233,9 @@ export default function Home() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {CATEGORIES_CONFIG.map((cat) => {
-                  const categoryQuestions = QUESTIONS_DATA.filter(q => q.category === cat.id);
-                  const answeredInCat = categoryQuestions.filter(q => progress.answered[q.id] !== undefined).length;
-                  const correctInCat = categoryQuestions.filter(q => progress.answered[q.id] === true).length;
+                  const categoryQuestions = questionsData.filter(q => q.category === cat.id);
+                  const answeredInCat = categoryQuestions.filter(q => userProgressMap[q.id] !== undefined).length;
+                  const correctInCat = categoryQuestions.filter(q => userProgressMap[q.id] === true).length;
 
                   return (
                     <CategoryCard
@@ -175,13 +258,16 @@ export default function Home() {
             {totalAnswered > 0 && (
               <div className="pt-6 text-center">
                 <button 
-                  onClick={() => {
+                  onClick={async () => {
                     if (confirm('Möchtest du deinen Lernfortschritt wirklich zurücksetzen?')) {
-                      resetProgress();
-                      setProgress({ answered: {}, lastActive: '' });
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (user) {
+                        await supabase.from('user_progress').delete().eq('user_id', user.id);
+                      }
+                      setUserProgressMap({});
                     }
                   }}
-                  className="text-xs font-semibold text-slate-400 hover:text-rose-500 transition-colors"
+                  className="text-xs font-semibold text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
                 >
                   🗑️ Fortschritt zurücksetzen
                 </button>
@@ -190,24 +276,28 @@ export default function Home() {
 
           </div>
         ) : (
-          /* QUIZ-MODUS: Zentriert & Fokus auf die Karte */
-          <div className="max-w-xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
+          /* QUIZ-MODUS */
+          <div className="max-w-xl mx-auto h-[calc(100dvh-5rem)] flex flex-col justify-between pb-2 space-y-2">
+            {/* Top Header */}
+            <div className="flex items-center justify-between shrink-0">
               <button 
                 onClick={() => setActiveCategory(null)}
-                className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-2 shadow-sm"
+                className="px-3 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
               >
                 ← Beenden
               </button>
-              <div className="text-xs font-extrabold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+              <div className="text-xs font-extrabold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800 px-2.5 py-0.5 rounded-md">
                 Frage {currentIndex + 1} / {currentQuestions.length}
               </div>
             </div>
 
-            <QuizCard
-              question={currentQuestions[currentIndex]}
-              onNext={handleNextQuestion}
-            />
+            {/* Karte nimmt genau den restlichen Platz ein */}
+            <div className="flex-1 min-h-0">
+              <QuizCard
+                question={currentQuestions[currentIndex]}
+                onNext={handleNextQuestion}
+              />
+            </div>
           </div>
         )}
 
