@@ -19,6 +19,24 @@ export default function QuizCard({ question, onNext }: QuizCardProps) {
 
   if (!question) return null;
 
+  // 1. Richtige Antwort ermitteln (snake_case oder camelCase)
+  const rawTarget = (question as any).correctAnswer ?? (question as any).correct_answer;
+  const targetAnswer = rawTarget !== undefined && rawTarget !== null ? Number(rawTarget) : null;
+
+  // 2. Erklärungs-Fallback: Falls kein Text in der DB steht, automatisch einen erzeugen
+  const correctOptionText = targetAnswer !== null && question.options[targetAnswer] 
+    ? question.options[targetAnswer] 
+    : '';
+
+  const fallbackExplanation = targetAnswer !== null
+    ? `Die richtige Antwort ist Option ${String.fromCharCode(65 + targetAnswer)}: "${correctOptionText}".`
+    : 'Keine weitere Erklärung verfügbar.';
+
+  // Verwendet question.explanation ODER den Fallback-Text
+  const displayExplanation = question.explanation && question.explanation.trim() !== ''
+    ? question.explanation
+    : fallbackExplanation;
+
   const handleOptionClick = (index: number) => {
     if (isSubmitted) return;
     setSelectedIndex(index);
@@ -31,14 +49,14 @@ export default function QuizCard({ question, onNext }: QuizCardProps) {
 
   const handleContinue = () => {
     if (selectedIndex === null) return;
-    const isCorrect = selectedIndex === question.correctAnswer;
+    const isCorrect = selectedIndex === targetAnswer;
     onNext(isCorrect);
   };
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between h-full overflow-hidden">
       
-      {/* 1. KOPFBEREICH: Kategorie, Norm & Frage */}
+      {/* 1. KOPFBEREICH */}
       <div className="shrink-0 space-y-2">
         <div className="flex items-center justify-between text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">
           <span>{question.category}</span>
@@ -54,7 +72,7 @@ export default function QuizCard({ question, onNext }: QuizCardProps) {
         </h2>
       </div>
 
-      {/* 2. MITTELBEREICH: Antworten + Erklärungsbox (scrollbar nur falls extrem kleiner Bildschirm) */}
+      {/* 2. MITTELBEREICH: Antworten */}
       <div className="flex-1 my-2 overflow-y-auto space-y-1.5 pr-0.5 min-h-0">
         {question.options.map((option, idx) => {
           let btnStyle = "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200 hover:border-amber-400";
@@ -64,9 +82,9 @@ export default function QuizCard({ question, onNext }: QuizCardProps) {
           }
 
           if (isSubmitted) {
-            if (idx === question.correctAnswer) {
+            if (idx === targetAnswer) {
               btnStyle = "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-semibold";
-            } else if (idx === selectedIndex && selectedIndex !== question.correctAnswer) {
+            } else if (idx === selectedIndex && selectedIndex !== targetAnswer) {
               btnStyle = "border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 font-semibold";
             } else {
               btnStyle = "border-slate-200 dark:border-slate-800 opacity-40";
@@ -88,27 +106,29 @@ export default function QuizCard({ question, onNext }: QuizCardProps) {
           );
         })}
 
-        {/* ERKLÄRUNG: Erscheint direkt unter den Optionen, schiebt sie leicht zusammen */}
+        {/* ERKLÄRUNGSBOX: Wird IMMER nach Abgabe angezeigt */}
         {isSubmitted && (
           <div className={`mt-2 p-2.5 rounded-xl border text-xs space-y-1 transition-all ${
-            selectedIndex === question.correctAnswer
+            selectedIndex === targetAnswer
               ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-200'
               : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800/50 text-rose-900 dark:text-rose-200'
           }`}>
             <div className="font-extrabold flex items-center justify-between text-[11px]">
-              <span>{selectedIndex === question.correctAnswer ? '✅ Richtig!' : '❌ Falsch!'}</span>
+              <span>{selectedIndex === targetAnswer ? '✅ Richtig!' : '❌ Falsch!'}</span>
               {question.normReference && (
                 <span className="opacity-80 font-mono text-[10px]">{question.normReference}</span>
               )}
             </div>
+
+            {/* Hier wird displayExplanation gerendert */}
             <p className="leading-snug text-[11px] sm:text-xs opacity-95 pt-1 border-t border-current/10">
-              {question.explanation}
+              {displayExplanation}
             </p>
           </div>
         )}
       </div>
 
-      {/* 3. FUSSBEREICH: IMMER SICHTBARER BUTTON */}
+      {/* 3. FUSSBEREICH: Buttons */}
       <div className="shrink-0 pt-1">
         {!isSubmitted ? (
           <button
