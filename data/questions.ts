@@ -1,17 +1,9 @@
-export interface Question {
-  id: number;
-  category: "DGUV" | "NAV_Niederspannung" | "Messungen_VDE" | "Netzformen" | "Anmeldung_TAB";
-  question: string;
-  options: string[];
-  correctAnswer: number; // Index der richtigen Option (0-3)
-  explanation: string;   // Erklärung für den Lerneffekt
-  normRef?: string;      // Normenreferenz (z.B. "DIN VDE 0100-600")
-}
+import { Category, Question } from '@/types/quiz';
 
-export const TREI_QUESTIONS: Question[] = [
+export const QUESTIONS_DATA: Question[] = [
   {
     id: 1,
-    category: "NAV_Niederspannung",
+    category: "TAB",
     question: "Wer darf Arbeiten an elektrischen Anlagen nach § 13 NAV (Niederspannungsanschlussverordnung) durchführen?",
     options: [
       "Jeder ausgebildete Elektroniker ohne Einschränkung",
@@ -25,7 +17,7 @@ export const TREI_QUESTIONS: Question[] = [
   },
   {
     id: 2,
-    category: "Messungen_VDE",
+    category: "DIN VDE 0100-600",
     question: "Welcher Grenzwert gilt für den Isolationswiderstand einer Neuanlage mit einer Nennspannung bis 500 V nach DIN VDE 0100-600?",
     options: [
       "Mindestens 0,5 MΩ",
@@ -39,7 +31,7 @@ export const TREI_QUESTIONS: Question[] = [
   },
   {
     id: 3,
-    category: "DGUV",
+    category: "VDE-AR-N 4100",
     question: "Nach welchen 5 Sicherheitsregeln wird vor Beginn von Arbeiten an elektrischen Anlagen im freigeschalteten Zustand vorgegangen?",
     options: [
       "Freischalten, Gegen Wiedereinschalten sichern, Spannungsfreiheit feststellen, Erdung anbringen, Absperren",
